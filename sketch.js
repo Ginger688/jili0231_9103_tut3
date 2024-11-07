@@ -7,7 +7,8 @@
 let img;
 
 function preload() {
-        img = loadImage('images/Edvard_Munch_The_Scream.jpeg'); // Replace with your image file path
+        img = loadImage('Assets/Edvard_Munch_The_Scream.jpeg'); 
+        song = loadSound('Assets/(G)I-DLE《I DO》.wav');
     }
 
 
