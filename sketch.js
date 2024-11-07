@@ -11,6 +11,8 @@ let img;
 let song;
 // Make a variable to hold the FFT object
 let fft;
+// Make a variable to hold the sound amplitude
+let sound_amplitude
 
 function preload() {
         img = loadImage('Assets/Edvard_Munch_The_Scream.jpeg'); 
@@ -72,7 +74,7 @@ function preload() {
     }
   }
 
-  // This is a background wave class, it will draw a lot of wave lines across the screen
+// This is a background wave class, it will draw a lot of wave lines across the screen
 class Wave {
     // Constructor with parameters for amplitude, frequency, yBase, color, and strokeWeight
     // The amplitude is the height of the wave
@@ -89,6 +91,8 @@ class Wave {
         this.yBase = yBase; 
         // Thickness of the wave line
         this.strokeWeight = strokeWeight; 
+        // Initial offset for Perlin noise
+        this.offset=0;
     }
   
     // Method to display the wave
@@ -99,7 +103,7 @@ class Wave {
       // Begin the shape
       beginShape();
       // Using a fixed xoff offset, the wave is kept stationary
-      let xoff = 0; 
+      let xoff = this.offset; 
       // Now we move across the screen, left to right in steps of 10 pixels
       for (let x = 0; x <= width; x += 10) {
         let waveHeight = map(noise(xoff), 0, 1, -this.amplitude, this.amplitude);
@@ -115,6 +119,8 @@ class Wave {
       }
       // Now we reached the edge of the screen we end the shape
       endShape();
+      // Now we increment the class instances offset, ready for the next frame
+      this.offset += 0.005;
     }
   }
 
@@ -284,36 +290,35 @@ class Screaming {
     createCanvas(windowWidth, windowHeight);
     // Resize the image to the canvas size
     img.resize(windowWidth, windowHeight);
-    
     // Create a new instance of p5.FFT() object
     fft = new p5.FFT(smoothing, numBins);
     song.connect(fft);
+
     // Add a button for play/pause
     // We cannot play sound automatically in p5.js, so we need to add a button to start the sound
     button = createButton("Play/Pause");
     // Set the position of the button to the bottom centre
     button.position((width - button.width) / 2, height - button.height - 2);
-
     // We set the action of the button by choosing what action and then a function to run
     // In this case, we want to run the function play_pause when the button is pressed
     button.mousePressed(play_pause);
-
     // Create the lines
     createLines();
-    // Create the waves
-    createWaves();
-
+    
   }
   
   function draw() {
     // Set the background color to an ocean blue
     background(10, 24, 72);
-    // The analyze() method returns an array of amplitude values across the frequency spectrum
-    let spectrum = fft.analyze();
-    //for (let i = 0; i < numBins; i++) {
-      // We divide the spectrum values by 255 so they are in the range 0 to 1
-       //shapes[i].display(spectrum[i]/255);
-    //}
+    sound_amplitude = fft.getEnergy(20, 500);
+    let wave_amplitude=map(sound_amplitude,0,255,0,height/8);
+    // Test for the animation
+    //let wave_amplitude=height/8;
+    // Create the waves
+    createWaves(wave_amplitude);
+    console.log(fft.analyze());
+    console.log("Sound amplitude: " + sound_amplitude);
+    console.log("Wave amplitude: " + wave_amplitude);
     // Create an instance of ScreamingDog, centered on canvas
     screaming1 = new Screaming(width*0.47, height*0.54, width*0.15);
     screaming2 = new Screaming(width*0.03, height*0.4, width*0.08);
@@ -349,7 +354,7 @@ class Screaming {
     }
   }
   
-  function createWaves(){
+  function createWaves(amplitude_wave){
     // Clear the waves array
     waves = [];
     // Create multiple waves with varying properties
@@ -358,13 +363,10 @@ class Screaming {
         // The wave is in the top half of the image
         let yBase = i * height *0.28/ (numWaves);
         // As we move down the screen i gets bigger and so does the amplitude
-        let amplitude = height/ 8; 
-        // As we move down the screen the waves get darker by increasing the alpha value of the colour
-        // Set the color with gradient effect
-        //let waveColor = color(0, 255 - i * 15, 255, 20 + i * 10); 
+        amplitude = i*amplitude_wave/numWaves; 
         // As we move down the screen the waves get heavier by increasing the stroke weight
         let strokeW = 10; 
-        waves.push(new Wave(amplitude, 0.03, yBase, strokeW));
+        waves.push(new Wave(amplitude, random(0.01, 0.02), yBase, strokeW));
     }
   }
 
@@ -436,7 +438,6 @@ class Screaming {
     lines=new Line(10,5);
   }
 
-  
   function windowResized() {
     // Resize the canvas when the window is resized. This will update the width and height variables 
     // that are used to calculate the size and position of the shapes.
