@@ -242,44 +242,45 @@ class Screaming {
   }
 
   class Boat {
-    constructor(x, y, size) {
+    constructor(x, y, size,amplitude) {
         // x position of the boat
         this.x = x;      
         // y position of the boat
         this.y = y;      
         // Overall size of the boat
         this.size = size; 
+        // The moving of the boat
+        this.amplitude=amplitude;
     }
   
     display() {
       // Set color for boat hull and outline color
       // Brown color for the boat hull
+      push();
+      translate(this.x+noise(this.amplitude),this.y+noise(this.amplitude));
       fill(139, 69, 19); 
       // Black outline
       stroke(0);  
       strokeWeight(1);      
-  
       // Boat hull: Use an ellipse shape
-      ellipse(this.x, this.y, this.size * 2, this.size / 2);
-  
+      ellipse(0, 0, this.size * 2, this.size / 2);
       // Mast: Use a thin rectangle for the mast
       // Black mast color
       fill(0); 
       // Mast
-      rect(this.x, this.y - this.size, this.size / 10, this.size); 
-  
+      rect(0, - this.size, this.size / 10, this.size); 
       // Sail: Use a triangle shape to represent the sail
       // White color for the sail
       fill(144, 203, 251); 
       noStroke();
-      triangle(this.x, this.y - this.size, this.x, this.y - this.size / 2, this.x + this.size / 1.5, this.y - this.size / 2);
-  
+      triangle(0, -this.size, 0, -this.size / 2, -this.size / 1.5, -this.size / 2);
       // Add a slight outline effect for the bottom of the boat
       stroke(0);
       strokeWeight(1);
       noFill();
       // Half-circle outline
-      arc(this.x, this.y, this.size * 2, this.size / 1.8, 0, PI);
+      arc(0, 0, this.size * 2, this.size / 1.8, 0, PI);
+      pop();
     }
   }
 
@@ -324,8 +325,8 @@ class Screaming {
     screaming2 = new Screaming(width*0.03, height*0.4, width*0.08);
     screaming3 = new Screaming(width*0.1, height*0.4, width*0.08);
     // Create the instance of the Boat
-    Boat1 = new Boat(width*0.3, height*0.35, width*0.04);
-    Boat2 = new Boat(width*0.4, height*0.38, width*0.04);
+    Boat1 = new Boat(width*0.3, height*0.35, width*0.03,sound_amplitude);
+    Boat2 = new Boat(width*0.4, height*0.38, width*0.03,sound_amplitude);
     // Draw lines
     lines.display();
     for (let i = 0; i < waves.length; i++) {
