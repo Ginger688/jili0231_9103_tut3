@@ -4,13 +4,18 @@
 // SID: 540929232
 // USYD CODE CITATION ACKNOELEDGEMENT
 
+// Initial set
+// Set an image
 let img;
+// Make a variable to hold the audio file
+let song;
+// Make a variable to hold the FFT object
+let fft;
 
 function preload() {
         img = loadImage('Assets/Edvard_Munch_The_Scream.jpeg'); 
         song = loadSound('Assets/(G)I-DLE《I DO》.wav');
     }
-
 
   // Array to store multiple waves
   let waves = [];
@@ -20,6 +25,12 @@ function preload() {
   let lines;
   // Set a screaming dog
   let screamingDog;
+  // Make a variable for the number of bins in the FFT object
+  let numBins = 128;
+  // Make a variable for the smoothing of the FFT
+  let smoothing = 0.8;
+  // Make a global variable for the button so we can access it in the windowResized function
+  let button;
   
   class Line{
     constructor(spacing, strokeWeight) {
@@ -58,9 +69,7 @@ function preload() {
                 line(x1, y1, x2, y2); // Draw the line segment
             }
         }
-
     }
-
   }
 
   // This is a background wave class, it will draw a lot of wave lines across the screen
@@ -204,7 +213,6 @@ class Screaming {
         curveVertex(0.4*this.size,-0.4*this.size);
         curveVertex(0.4*this.size,-0.4*this.size);
         endShape();
-
         pop();
     
     }
@@ -271,21 +279,41 @@ class Screaming {
 
 
   function setup() {
+
     // Create the canvas filling the window
     createCanvas(windowWidth, windowHeight);
     // Resize the image to the canvas size
     img.resize(windowWidth, windowHeight);
-    // Draw the image as a background to compare with
-    image(img, 0, 0); 
+    
+    // Create a new instance of p5.FFT() object
+    fft = new p5.FFT(smoothing, numBins);
+    song.connect(fft);
+    // Add a button for play/pause
+    // We cannot play sound automatically in p5.js, so we need to add a button to start the sound
+    button = createButton("Play/Pause");
+    // Set the position of the button to the bottom centre
+    button.position((width - button.width) / 2, height - button.height - 2);
+
+    // We set the action of the button by choosing what action and then a function to run
+    // In this case, we want to run the function play_pause when the button is pressed
+    button.mousePressed(play_pause);
+
     // Create the lines
     createLines();
     // Create the waves
     createWaves();
+
   }
   
   function draw() {
     // Set the background color to an ocean blue
-    //background(10, 24, 72);
+    background(10, 24, 72);
+    // The analyze() method returns an array of amplitude values across the frequency spectrum
+    let spectrum = fft.analyze();
+    //for (let i = 0; i < numBins; i++) {
+      // We divide the spectrum values by 255 so they are in the range 0 to 1
+       //shapes[i].display(spectrum[i]/255);
+    //}
     // Create an instance of ScreamingDog, centered on canvas
     screaming1 = new Screaming(width*0.47, height*0.54, width*0.15);
     screaming2 = new Screaming(width*0.03, height*0.4, width*0.08);
@@ -310,6 +338,17 @@ class Screaming {
     Boat2.display();
   }
 
+  // Play the song or pause the song
+  function play_pause() {
+    if (song.isPlaying()) {
+      song.stop();
+    } else {
+      // We can use song.play() here if we want the song to play once
+      // In this case, we want the song to loop, so we call song.loop()
+      song.loop();
+    }
+  }
+  
   function createWaves(){
     // Clear the waves array
     waves = [];
@@ -404,8 +443,8 @@ class Screaming {
     resizeCanvas(windowWidth, windowHeight);
     // Resize the image to the canvas size
     img.resize(windowWidth, windowHeight);
-    // Draw the image as a background to compare with
-    image(img, 0, 0); 
+    // Reset the position of the button
+    button.position((width - button.width) / 2, height - button.height - 2);
     // Recreate waves with updated dimensions
     createWaves();
   }
