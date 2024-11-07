@@ -47,8 +47,6 @@ class Line{
   // Method to display the lines
   display(){
       // Access image pixels
-      img.loadPixels(); 
-      // Access image pixels
       let segmentLength = 50;
       for (let y = 0; y < height; y += this.spacing) {
           for (let x = 0; x < width; x += this.spacing) {
@@ -61,6 +59,7 @@ class Line{
               // Determine angle based on brightness or color properties
               //let angle = map(r + g + b, 0, 255 * 3, -PI / 4, PI / 4);
               let angle = map(this.amplitude, 0, 255, 0, PI / 4);
+              
               // Set the color from the image pixel
               stroke(r, g, b);
               strokeWeight(this.strokeWeight);
@@ -72,11 +71,11 @@ class Line{
               let y2 = y + segmentLength * sin(angle) / 2;
 
               line(x1, y1, x2, y2); // Draw the line segment
-              
           }
       }
   }
 }
+
 
 // This is a background wave class, it will draw a lot of wave lines across the screen
 class Wave {
@@ -130,16 +129,17 @@ class Wave {
 
 // Define the ScreamingDog class
 class Screaming {
-    constructor(x, y, size) {
+    constructor(x, y, size,amplitude) {
       this.x = x;
       this.y = y;
       this.size = size;
+      this.amplitude=amplitude;
     }
   
     // Method to display the dog
     display() {
         push();
-        translate(this.x, this.y);
+        translate(this.x+5*noise(this.amplitude), this.y+5*noise(this.amplitude));
         //rotate(20/180*Math.PI);
         noStroke();
         // The coordinates of the vertices of the triangle draw the ears
@@ -173,7 +173,8 @@ class Screaming {
         // Mouth
         fill(141, 136, 79);
         stroke(136, 93, 43);
-        ellipse(0, this.size * 0.15, this.size * 0.16, this.size * 0.3); 
+        let mouth_height=map(this.amplitude,0,255,0,this.size * 0.3);
+        ellipse(0, this.size * 0.15, this.size * 0.16, mouth_height); 
 
         // Cloth
         fill(57, 50, 45);
@@ -290,7 +291,6 @@ class Screaming {
 
 
   function setup() {
-
     // Create the canvas filling the window
     createCanvas(windowWidth, windowHeight);
     // Resize the image to the canvas size
@@ -298,7 +298,8 @@ class Screaming {
     // Create a new instance of p5.FFT() object
     fft = new p5.FFT(smoothing, numBins);
     song.connect(fft);
-
+    // Load pixel data for color sampling;
+    img.loadPixels();
     // Add a button for play/pause
     // We cannot play sound automatically in p5.js, so we need to add a button to start the sound
     button = createButton("Play/Pause");
@@ -308,13 +309,13 @@ class Screaming {
     // In this case, we want to run the function play_pause when the button is pressed
     button.mousePressed(play_pause);
     // Create lines
-    lines=new Line(10,5,0);
+    lines=new Line(10,5,20);
     createWaves(height / 8);
   }
   
   function draw() {
     // Set the background color to an ocean blue
-    background(10, 24, 72);
+    background(0);
     // Update fft data
     fft.analyze();
     sound_amplitude = fft.getEnergy(20,500);
@@ -326,7 +327,6 @@ class Screaming {
     createWaves(wave_amplitude);
     // Update the amplitude value of the lines object
     lines.amplitude = sound_amplitude;
-    //console.log(lines.amplitude);
     // Draw lines
     lines.display();
     for (let i = 0; i < waves.length; i++) {
@@ -335,12 +335,12 @@ class Screaming {
     }
 
     // Create an instance of ScreamingDog, centered on canvas
-    screaming1 = new Screaming(width*0.47, height*0.54, width*0.15);
-    screaming2 = new Screaming(width*0.03, height*0.4, width*0.08);
-    screaming3 = new Screaming(width*0.1, height*0.4, width*0.08);
+    let screaming1 = new Screaming(width*0.47, height*0.54, width*0.15,sound_amplitude);
+    let screaming2 = new Screaming(width*0.03, height*0.4, width*0.08,sound_amplitude);
+    let screaming3 = new Screaming(width*0.1, height*0.4, width*0.08,sound_amplitude);
     // Create the instance of the Boat
-    Boat1 = new Boat(width*0.3, height*0.35, width*0.03,sound_amplitude);
-    Boat2 = new Boat(width*0.4, height*0.38, width*0.03,sound_amplitude);
+    let Boat1 = new Boat(width*0.3, height*0.35, width*0.03,sound_amplitude);
+    let Boat2 = new Boat(width*0.4, height*0.38, width*0.03,sound_amplitude);
     
     // Display the bridge
     createBridge();
