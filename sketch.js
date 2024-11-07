@@ -13,66 +13,70 @@ let song;
 let fft;
 // Make a variable to hold the sound amplitude
 let sound_amplitude
+// Array to store multiple waves
+// Make a global variable for the button so we can access it in the windowResized function
+let button;
+
+// Set waves
+let waves = [];
+// Set lines
+let lines;
+
+// Number of waves to create
+let numWaves = 20;
+// Make a variable for the number of bins in the FFT object
+let numBins = 128;
+// Make a variable for the smoothing of the FFT
+let smoothing = 0.8;
 
 function preload() {
-        img = loadImage('Assets/Edvard_Munch_The_Scream.jpeg'); 
-        song = loadSound('Assets/(G)I-DLE《I DO》.wav');
-    }
+  img = loadImage('Assets/Edvard_Munch_The_Scream.jpeg'); 
+  song = loadSound('Assets/(G)I-DLE《I DO》.wav');
+}
 
-  // Array to store multiple waves
-  let waves = [];
-  // Number of waves to create
-  let numWaves = 20;
-  // Set lines
-  let lines;
-  // Set a screaming dog
-  let screamingDog;
-  // Make a variable for the number of bins in the FFT object
-  let numBins = 128;
-  // Make a variable for the smoothing of the FFT
-  let smoothing = 0.8;
-  // Make a global variable for the button so we can access it in the windowResized function
-  let button;
-  
-  class Line{
-    constructor(spacing, strokeWeight) {
-        this.spacing = spacing; 
-        // Thickness of the line
-        this.strokeWeight = strokeWeight; 
-    }
-
-    // Method to display the lines
-    display(){
-        // Access image pixels
-        img.loadPixels(); 
-        // Access image pixels
-        let segmentLength = 50;
-        for (let y = 0; y < height; y += this.spacing) {
-            for (let x = 0; x < width; x += this.spacing) {
-                // Pixel array index
-                let index = (x + y * img.width) * 4;
-                let r = img.pixels[index];
-                let g = img.pixels[index + 1];
-                let b = img.pixels[index + 2];
-
-                // Determine angle based on brightness or color properties
-                let angle = map(r + g + b, 0, 255 * 3, -PI / 4, PI / 4);
-
-                // Set the color from the image pixel
-                stroke(r, g, b);
-                strokeWeight(this.strokeWeight);
-                
-                // Calculate the start and end points for the line segment
-                let x1 = x - segmentLength * cos(angle) / 2;
-                let y1 = y - segmentLength * sin(angle) / 2;
-                let x2 = x + segmentLength * cos(angle) / 2;
-                let y2 = y + segmentLength * sin(angle) / 2;
-
-                line(x1, y1, x2, y2); // Draw the line segment
-            }
-        }
-    }
+class Line{
+  constructor(spacing, strokeWeight, amplitude) {
+    // The space of the lines
+    this.spacing = spacing; 
+    // Thickness of the line
+    this.strokeWeight = strokeWeight; 
+    // The amplitude of the sound
+    this.amplitude=amplitude;
   }
+
+  // Method to display the lines
+  display(){
+      // Access image pixels
+      img.loadPixels(); 
+      // Access image pixels
+      let segmentLength = 50;
+      for (let y = 0; y < height; y += this.spacing) {
+          for (let x = 0; x < width; x += this.spacing) {
+              // Pixel array index
+              let index = (x + y * img.width) * 4;
+              let r = img.pixels[index];
+              let g = img.pixels[index + 1];
+              let b = img.pixels[index + 2];
+
+              // Determine angle based on brightness or color properties
+              //let angle = map(r + g + b, 0, 255 * 3, -PI / 4, PI / 4);
+              let angle = map(this.amplitude, 0, 255, 0, PI / 4);
+              // Set the color from the image pixel
+              stroke(r, g, b);
+              strokeWeight(this.strokeWeight);
+              
+              // Calculate the start and end points for the line segment
+              let x1 = x - segmentLength * cos(angle) / 2;
+              let y1 = y - segmentLength * sin(angle) / 2;
+              let x2 = x + segmentLength * cos(angle) / 2;
+              let y2 = y + segmentLength * sin(angle) / 2;
+
+              line(x1, y1, x2, y2); // Draw the line segment
+              
+          }
+      }
+  }
+}
 
 // This is a background wave class, it will draw a lot of wave lines across the screen
 class Wave {
@@ -233,7 +237,7 @@ class Screaming {
         ellipse(0,0,0.5*this.size,0.5*this.size);
         // Legs
         stroke(57, 50, 45);
-        strokeWeight(8);
+        strokeWeight(10);
         line(-0.15*this.size,2*this.size,-0.15*this.size,2.8*this.size); 
         line(0.15*this.size,2*this.size,0.15*this.size,2.8*this.size);
         pop();
@@ -303,23 +307,33 @@ class Screaming {
     // We set the action of the button by choosing what action and then a function to run
     // In this case, we want to run the function play_pause when the button is pressed
     button.mousePressed(play_pause);
-    // Create the lines
-    createLines();
-    
+    // Create lines
+    lines=new Line(10,5,0);
+    createWaves(height / 8);
   }
   
   function draw() {
     // Set the background color to an ocean blue
     background(10, 24, 72);
-    sound_amplitude = fft.getEnergy(20, 500);
+    // Update fft data
+    fft.analyze();
+    sound_amplitude = fft.getEnergy(20,500);
+    //console.log(sound_amplitude);
     let wave_amplitude=map(sound_amplitude,0,255,0,height/8);
     // Test for the animation
     //let wave_amplitude=height/8;
     // Create the waves
     createWaves(wave_amplitude);
-    console.log(fft.analyze());
-    console.log("Sound amplitude: " + sound_amplitude);
-    console.log("Wave amplitude: " + wave_amplitude);
+    // Update the amplitude value of the lines object
+    lines.amplitude = sound_amplitude;
+    //console.log(lines.amplitude);
+    // Draw lines
+    lines.display();
+    for (let i = 0; i < waves.length; i++) {
+      // Update all waves
+      waves[i].display();
+    }
+
     // Create an instance of ScreamingDog, centered on canvas
     screaming1 = new Screaming(width*0.47, height*0.54, width*0.15);
     screaming2 = new Screaming(width*0.03, height*0.4, width*0.08);
@@ -327,13 +341,7 @@ class Screaming {
     // Create the instance of the Boat
     Boat1 = new Boat(width*0.3, height*0.35, width*0.03,sound_amplitude);
     Boat2 = new Boat(width*0.4, height*0.38, width*0.03,sound_amplitude);
-    // Draw lines
-    lines.display();
-    for (let i = 0; i < waves.length; i++) {
-        // Update all waves
-        waves[i].display();
-    }
-    //screamingDog.display();
+    
     // Display the bridge
     createBridge();
     // Display the screaming dog
@@ -355,7 +363,7 @@ class Screaming {
     }
   }
   
-  function createWaves(amplitude_wave){
+  function createWaves(sound_amplitude){
     // Clear the waves array
     waves = [];
     // Create multiple waves with varying properties
@@ -364,7 +372,7 @@ class Screaming {
         // The wave is in the top half of the image
         let yBase = i * height *0.28/ (numWaves);
         // As we move down the screen i gets bigger and so does the amplitude
-        amplitude = i*amplitude_wave/numWaves; 
+        amplitude = i*sound_amplitude/numWaves; 
         // As we move down the screen the waves get heavier by increasing the stroke weight
         let strokeW = 10; 
         waves.push(new Wave(amplitude, random(0.01, 0.02), yBase, strokeW));
@@ -434,10 +442,6 @@ class Screaming {
     }
   }
   
-
-  function createLines(){
-    lines=new Line(10,5);
-  }
 
   function windowResized() {
     // Resize the canvas when the window is resized. This will update the width and height variables 
