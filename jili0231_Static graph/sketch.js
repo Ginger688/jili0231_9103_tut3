@@ -1,4 +1,4 @@
-// jili0231_assignment_week9
+// jili0231_assignment_major_project
 // Name: Jinjie Li
 // Unikey: jili0231
 // SID: 540929232
