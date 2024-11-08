@@ -31,7 +31,7 @@ let smoothing = 0.8;
 
 function preload() {
   img = loadImage('Assets/Edvard_Munch_The_Scream.jpeg'); 
-  song = loadSound('Assets/(G)I-DLE《I DO》.wav');
+  song = loadSound('Assets/Kate Bush - Running Up That Hill(A Deal With God) (2018 Remaster).wav');
 }
 
 class Line{
