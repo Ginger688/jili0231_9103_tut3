@@ -123,6 +123,7 @@ class Screaming {
         //rotate(20/180*Math.PI);
         noStroke();
         // The coordinates of the vertices of the triangle draw the ears
+        // Quit the thought of drawing a cat
         //fill(148, 140, 130);
         //triangle(-this.size *0.6, -this.size * 0.5, -this.size * 0.25 , -this.size * 0.5, -this.size * 0.5, -this.size * 0.1);
         //triangle(this.size *0.75, -this.size * 0.35, this.size * 0.35 , -this.size * 0.35, this.size * 0.4, this.size * 0.1);
@@ -142,7 +143,7 @@ class Screaming {
         curveVertex(0,-0.5*this.size);
         curveVertex(0,-0.5*this.size);
         endShape();
-        //ellipse(0,0,this.size,this.size*1.1);
+
         // Eyes
         fill(189, 161, 106);
         stroke(141, 136, 79);
@@ -178,6 +179,7 @@ class Screaming {
         // Hand
         fill(194, 180, 139);
         stroke(136, 93, 43);
+
         // Left hand
         beginShape();
         curveVertex(-0.4*this.size,-0.4*this.size);
@@ -203,7 +205,6 @@ class Screaming {
         curveVertex(0.4*this.size,-0.4*this.size);
         curveVertex(0.4*this.size,-0.4*this.size);
         endShape();
-
         pop();
     
     }
@@ -284,7 +285,7 @@ class Screaming {
   
   function draw() {
     // Set the background color to an ocean blue
-    //background(10, 24, 72);
+    background(10, 24, 72);
     // Create an instance of ScreamingDog, centered on canvas
     screaming1 = new Screaming(width*0.47, height*0.54, width*0.15);
     screaming2 = new Screaming(width*0.03, height*0.4, width*0.08);
@@ -298,7 +299,6 @@ class Screaming {
         // Update all waves
         waves[i].display();
     }
-    //screamingDog.display();
     // Display the bridge
     createBridge();
     // Display the screaming dog
@@ -318,10 +318,7 @@ class Screaming {
         // The wave is in the top half of the image
         let yBase = i * height *0.28/ (numWaves);
         // As we move down the screen i gets bigger and so does the amplitude
-        let amplitude = height/ 8; 
-        // As we move down the screen the waves get darker by increasing the alpha value of the colour
-        // Set the color with gradient effect
-        //let waveColor = color(0, 255 - i * 15, 255, 20 + i * 10); 
+        let amplitude = height/ 8;
         // As we move down the screen the waves get heavier by increasing the stroke weight
         let strokeW = 10; 
         waves.push(new Wave(amplitude, 0.03, yBase, strokeW));
@@ -384,9 +381,6 @@ class Screaming {
             // Set the color from the image pixel
             stroke(249, 208, 92+x);
             strokeWeight(4);
-            // The start and end points for the line segment
-            // Draw the line segment
-            //line(x, y, x + 100 * cos(angle) / 2, y + 100 * sin(angle) / 2); 
         }
     }
   }
