@@ -57,8 +57,9 @@ class Line{
               let b = img.pixels[index + 2];
 
               // Determine angle based on brightness or color properties
-              //let angle = map(r + g + b, 0, 255 * 3, -PI / 4, PI / 4);
-              let angle = map(this.amplitude, 0, 255, 0, PI / 4);
+              //let change_angle=map(this.amplitude,0,255,-PI / 4, PI / 4);
+              let angle = map(r + g + b, 0, 255 * 3, 0, -PI / 4, PI / 4);
+              //let angle = map(this.amplitude, 0, 255, 0, change_angle);
               
               // Set the color from the image pixel
               stroke(r, g, b);
@@ -69,8 +70,11 @@ class Line{
               let y1 = y - segmentLength * sin(angle) / 2;
               let x2 = x + segmentLength * cos(angle) / 2;
               let y2 = y + segmentLength * sin(angle) / 2;
+              // Draw the line segment
+              let change_scope=map(this.amplitude,0,255,0,width*0.2);
+              line(x1+10*noise(this.amplitude), y1+change_scope, x2+10*noise(this.amplitude), y2+change_scope); 
 
-              line(x1, y1, x2, y2); // Draw the line segment
+
           }
       }
   }
