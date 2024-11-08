@@ -30,6 +30,7 @@ let numBins = 128;
 let smoothing = 0.8;
 
 function preload() {
+  // Load images and audio sources
   img = loadImage('Assets/Edvard_Munch_The_Scream.jpeg'); 
   song = loadSound('Assets/Kate Bush - Running Up That Hill(A Deal With God) (2018 Remaster).wav');
 }
@@ -57,9 +58,9 @@ class Line{
               let b = img.pixels[index + 2];
 
               // Determine angle based on brightness or color properties
-              //let change_angle=map(this.amplitude,0,255,-PI / 4, PI / 4);
-              let angle = map(r + g + b, 0, 255 * 3, 0, -PI / 4, PI / 4);
-              //let angle = map(this.amplitude, 0, 255, 0, change_angle);
+              let change_angle=map(this.amplitude,0,255,-PI / 4, PI / 4);
+              //let angle = map(r + g + b, 0, 255 * 3, 0, -PI / 4, PI / 4);
+              let angle = map(this.amplitude, 0, 255, 0, change_angle);
               
               // Set the color from the image pixel
               stroke(r, g, b);
@@ -143,17 +144,14 @@ class Screaming {
     // Method to display the dog
     display() {
         push();
+        // The amplitude of the sound is used to adjust the position of the person
         translate(this.x+5*noise(this.amplitude), this.y+5*noise(this.amplitude));
-        //rotate(20/180*Math.PI);
         noStroke();
-        // The coordinates of the vertices of the triangle draw the ears
-        //fill(148, 140, 130);
-        //triangle(-this.size *0.6, -this.size * 0.5, -this.size * 0.25 , -this.size * 0.5, -this.size * 0.5, -this.size * 0.1);
-        //triangle(this.size *0.75, -this.size * 0.35, this.size * 0.35 , -this.size * 0.35, this.size * 0.4, this.size * 0.1);
         
         //body
         fill(148, 140, 130);
         // Head
+        // The head is a state of narrow upper size
         fill(194, 180, 139);
         beginShape();
         curveVertex(0,-0.5*this.size);
@@ -166,7 +164,7 @@ class Screaming {
         curveVertex(0,-0.5*this.size);
         curveVertex(0,-0.5*this.size);
         endShape();
-        //ellipse(0,0,this.size,this.size*1.1);
+        
         // Eyes
         fill(189, 161, 106);
         stroke(141, 136, 79);
@@ -177,10 +175,12 @@ class Screaming {
         // Mouth
         fill(141, 136, 79);
         stroke(136, 93, 43);
+        // The amplitude of the sound is used to adjust the size of the mouth
         let mouth_height=map(this.amplitude,0,255,0,this.size * 0.3);
         ellipse(0, this.size * 0.15, this.size * 0.16, mouth_height); 
 
         // Cloth
+        // The clothes were made to feel like capes
         fill(57, 50, 45);
         beginShape();
         curveVertex(0,0.7*this.size);
@@ -233,6 +233,7 @@ class Screaming {
     }
     back(){
         push();
+        // The amplitude of the sound is used to adjust the position of the pedestrian
         translate(this.x+10*noise(this.amplitude), this.y+10*noise(this.amplitude));
         noStroke();
         fill(57, 50, 45);
@@ -266,6 +267,7 @@ class Screaming {
       // Set color for boat hull and outline color
       // Brown color for the boat hull
       push();
+      // Use the amplitude of the sound to make the boat feel swaying
       translate(this.x+5*noise(this.amplitude),this.y+5*noise(this.amplitude));
       fill(139, 69, 19); 
       // Black outline
