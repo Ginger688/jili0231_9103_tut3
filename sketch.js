@@ -71,8 +71,8 @@ class Line{
               let x2 = x + segmentLength * cos(angle) / 2;
               let y2 = y + segmentLength * sin(angle) / 2;
               // Draw the line segment
-              let change_scope=map(this.amplitude,0,255,0,width*0.2);
-              line(x1+10*noise(this.amplitude), y1+change_scope, x2+10*noise(this.amplitude), y2+change_scope); 
+              let change_scope=map(this.amplitude,0,255,0,width*0.1);
+              line(x1+10*noise(this.amplitude), y1+10*noise(this.amplitude), x2+10*noise(this.amplitude), y2+change_scope); 
 
 
           }
@@ -233,7 +233,7 @@ class Screaming {
     }
     back(){
         push();
-        translate(this.x, this.y);
+        translate(this.x+10*noise(this.amplitude), this.y+10*noise(this.amplitude));
         noStroke();
         fill(57, 50, 45);
         //body
@@ -266,7 +266,7 @@ class Screaming {
       // Set color for boat hull and outline color
       // Brown color for the boat hull
       push();
-      translate(this.x+noise(this.amplitude),this.y+noise(this.amplitude));
+      translate(this.x+5*noise(this.amplitude),this.y+5*noise(this.amplitude));
       fill(139, 69, 19); 
       // Black outline
       stroke(0);  
